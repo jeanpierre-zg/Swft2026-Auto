@@ -1,3 +1,15 @@
+# ⚠️ ADVERTENCIA DE CONFIDENCIALIDAD ⚠️
+
+**Este proyecto contiene información sensible y propietaria de Interbank, específicamente relacionada con el proyecto SWIFT 2026.**
+
+**SU USO ESTÁ RESTRINGIDO EXCLUSIVAMENTE A PERSONAL AUTORIZADO DE INTERBANK (QA's y equipos de desarrollo involucrados).**
+
+**La divulgación, reproducción o distribución no autorizada de este código o de la información contenida en él, incluyendo detalles de la implementación de SWIFT 2026, credenciales, URLs de entornos o cualquier otro dato sensible, está estrictamente prohibida y puede acarrear GRAVES CONSECUENCIAS LEGALES conforme a la legislación vigente y las políticas internas de Interbank.**
+
+**Al acceder y utilizar este repositorio, usted reconoce y acepta su obligación de mantener la confidencialidad de la información y de cumplir con todas las leyes y políticas aplicables.**
+
+---
+
 # 🚀 Framework de Automatización QA: Selenium, Cucumber, Screenplay & Reportes Word
 
 ¡Bienvenido al Framework de Automatización QA! Este proyecto está diseñado para realizar pruebas automatizadas de extremo a extremo (E2E) utilizando un stack de tecnologías moderno y generar reportes de evidencia detallados en formato Word (.docx).
@@ -158,11 +170,5 @@ De esta manera, el repositorio siempre contendrá una base completa y funcional,
 **Jean Pierre Laurente Zambrano**
 
 <img src="https://github.com/jeanpierre-zg.png" width="100" height="100" alt="Foto de perfil de Jean Pierre Laurente Zambrano">
-
----
-
-## 📄 Licencia
-
-Este proyecto se distribuye bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
 
 ---
