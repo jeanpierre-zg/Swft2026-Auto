@@ -1,0 +1,25 @@
+# Archivos de compilación y dependencias de Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de configuración del IDE (IntelliJ IDEA)
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Drivers de navegadores (generados o descargados localmente)
+drivers/
+
+# Evidencias de ejecución (generadas por el framework)
+target/evidencias/
+target/cucumber-reports/
+
+# Archivos de logs y temporales
+*.log
+.DS_Store
