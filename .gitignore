@@ -1,0 +1,26 @@
+# Java y Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Drivers y Evidencias
+drivers/
+target/evidencias/
+target/cucumber-reports/
+
+# Archivos de configuración con credenciales (opcional por seguridad)
+# src/test/resources/config.properties
+
+# Logs y temporales
+*.log
+.DS_Store
