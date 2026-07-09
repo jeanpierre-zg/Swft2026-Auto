@@ -1,0 +1,23 @@
+# Archivos generados por la ejecución de pruebas que NO deben subirse a GitHub
+target/evidencias/
+target/cucumber-reports/
+*.log
+
+# Archivos de compilación de Java que NO deben subirse a GitHub
+# (Estos se ignoran para mantener el repositorio más limpio, pero si quieres subirlos, comenta estas líneas)
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de configuración del IDE (IntelliJ IDEA) que SÍ se suben
+# (Estas líneas están comentadas para que Git NO las ignore y se suban a GitHub)
+#.idea/
+#*.iml
+
+# Drivers de navegadores que SÍ se suben
+# (Esta línea está comentada para que Git NO la ignore y se suba a GitHub)
+#drivers/
+
+# Otros archivos temporales
+.DS_Store

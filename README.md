@@ -125,6 +125,34 @@ Al finalizar la ejecución de las pruebas, se generarán los siguientes reportes
 
 ---
 
+## 📝 Estrategia de Control de Versiones (Git)
+
+Este proyecto está configurado para que **todo el código fuente, archivos de configuración del IDE (`.idea/`, `.iml`), y los drivers de navegador (`drivers/`) se suban al repositorio de GitHub**. Esto asegura que, al clonar el proyecto, un nuevo usuario tenga una base completa y funcional para empezar a trabajar.
+
+**Lo único que Git ignorará son los archivos generados automáticamente durante la ejecución de las pruebas**, ya que estos son temporales, específicos de cada corrida y no forman parte del código fuente del proyecto.
+
+### Archivos y Carpetas Ignorados por Git:
+
+-   `target/evidencias/`: Contiene los reportes Word y capturas de pantalla generados.
+-   `target/cucumber-reports/`: Contiene los reportes HTML y JSON de Cucumber.
+-   `*.log`: Cualquier archivo de log generado.
+-   `*.class`, `*.jar`, `*.war`, `*.ear`: Archivos compilados de Java (aunque `target/` se sube, estos específicos se ignoran para mantener el repositorio más ligero de binarios).
+
+### Flujo de Trabajo Recomendado:
+
+1.  **Clonar el Repositorio**: Un nuevo usuario obtendrá todo el proyecto, incluyendo los drivers y la configuración del IDE.
+2.  **Configurar `config.properties`**: Ajustar URLs y credenciales.
+3.  **Ejecutar Pruebas**: Al ejecutar los `RunnerTest`, se generarán nuevas evidencias en `target/evidencias/` y `target/cucumber-reports/`.
+4.  **Hacer Cambios y Commit**: Cuando realices modificaciones en el código fuente (clases Java, features, config.properties, etc.):
+    -   Git detectará estos cambios.
+    -   **Git NO detectará los nuevos archivos en `target/evidencias/` o `target/cucumber-reports/`**, ya que están ignorados por el `.gitignore`.
+    -   Realiza tu `git add .` y `git commit -m "Mensaje descriptivo"`.
+    -   Realiza tu `git push`.
+
+De esta manera, el repositorio siempre contendrá una base completa y funcional, y solo los resultados de ejecución (que varían constantemente) serán ignorados.
+
+---
+
 ## 👤 Autor
 
 **Jean Pierre Laurente Zambrano**
