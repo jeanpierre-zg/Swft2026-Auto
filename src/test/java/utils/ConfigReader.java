@@ -2,6 +2,8 @@ package utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -14,13 +16,11 @@ public class ConfigReader {
 
     // Bloque estático: se ejecuta una sola vez al cargar la clase en memoria
     static {
-        try {
-            // Ruta del archivo de configuración
-            FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream("src/test/resources/config.properties"), StandardCharsets.UTF_8)) {
             properties = new Properties();
-            properties.load(fis);
+            properties.load(reader);
         } catch (IOException e) {
-            throw new RuntimeException("ERROR: No se encontró el archivo src/test/resources/config.properties");
+            throw new RuntimeException("ERROR: No se encontró el archivo src/test/resources/config.properties", e);
         }
     }
 

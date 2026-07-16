@@ -7,7 +7,13 @@ import io.cucumber.java.es.*;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 import org.testng.Assert;
+import org.testng.Reporter;
 import tasks.LoguearseEnSwift;
 import tasks.NavegarA;
 import ui.SwiftUI;
@@ -52,7 +58,12 @@ public class SwiftSteps {
     public void ingresarPortal() {
         try {
             NavegarA.laPagina(ConfigReader.getProperty("url.swift.uat")).realizarComo(driver);
-            registrar("Acceso Swift", "Navegación a la URL de Swift UAT");
+            // Esperar a que el documento esté completamente cargado antes de capturar la primera evidencia
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+            wait.until(d -> ((JavascriptExecutor) d).executeScript("return document.readyState").equals("complete"));
+            // Pequeño retardo para asegurar renderizado visual antes de la captura
+            try { Thread.sleep(500); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+            registrar("Acceso Swift", "Navegación a la URL de Swift UAT - página cargada");
         } catch (Exception e) {
             registrar("ERROR ACCESO", "No se pudo cargar la URL: " + e.getMessage());
             throw e;
@@ -62,10 +73,23 @@ public class SwiftSteps {
     @Cuando("selecciona el método de autenticación por dos factores")
     public void seleccionar2FA() {
         try {
-            driver.findElement(SwiftUI.BOTON_DOS_FACTORES).click();
-            registrar("Selección 2FA", "Selección del método de autenticación doble factor");
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebElement boton = wait.until(ExpectedConditions.visibilityOfElementLocated(SwiftUI.BOTON_DOS_FACTORES));
+            // Asegurar que esté en viewport
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", boton);
+            // Pequeña espera para renderizado estable
+            try { Thread.sleep(500); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+
+            // Captura la pantalla antes de hacer click (evidencia)
+            registrar("Selección 2FA - Antes", "Se visualiza el botón de 2FA antes de hacer click");
+
+            // Click con espera de clicabilidad
+            wait.until(ExpectedConditions.elementToBeClickable(SwiftUI.BOTON_DOS_FACTORES)).click();
+
+            // Captura posterior al click por si se requiere evidencia del cambio
+            registrar("Selección 2FA - Después", "Se hizo click en el botón de 2FA");
         } catch (Exception e) {
-            registrar("ERROR 2FA", "No se encontró el botón de 2FA: " + e.getMessage());
+            registrar("ERROR 2FA", "No se encontró o no fue posible interactuar con el botón de 2FA: " + e.getMessage());
             throw e;
         }
     }
@@ -73,18 +97,39 @@ public class SwiftSteps {
     @Y("se autentica con el rol de {string}")
     public void autenticarseConRol(String rol) {
         try {
-            String usuario = rol.equalsIgnoreCase("procesador") 
-                ? ConfigReader.getProperty("swift.procesador.user") 
+            String usuario = rol.equalsIgnoreCase("procesador")
+                ? ConfigReader.getProperty("swift.procesador.user")
                 : ConfigReader.getProperty("swift.liberador.user");
             
-            String password = rol.equalsIgnoreCase("procesador") 
-                ? ConfigReader.getProperty("swift.procesador.pass") 
+            String password = rol.equalsIgnoreCase("procesador")
+                ? ConfigReader.getProperty("swift.procesador.pass")
                 : ConfigReader.getProperty("swift.liberador.pass");
 
-            LoguearseEnSwift.conCredenciales(usuario, password).realizarComo(driver);
-            registrar("Login Swift", "Autenticación como usuario con rol: " + rol);
+            // Ingresar credenciales con esperas y tomar evidencia clara
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebElement usuarioElem = wait.until(ExpectedConditions.visibilityOfElementLocated(SwiftUI.CAMPO_USUARIO));
+            usuarioElem.clear();
+            usuarioElem.sendKeys(usuario);
+
+            WebElement passElem = wait.until(ExpectedConditions.visibilityOfElementLocated(SwiftUI.CAMPO_PASSWORD));
+            passElem.clear();
+            passElem.sendKeys(password);
+
+            // Log genérico sin exponer credenciales
+            Reporter.log("[LOGIN] Intentando login", true);
+
+            // Captura después de completar credenciales (única evidencia de credenciales)
+            registrar("Credenciales ingresadas", "Usuario y contraseña ingresados para rol: " + rol);
+
+            // Asegurar que el botón de ingresar sea clickable y hacer click
+            WebElement btnLogin = wait.until(ExpectedConditions.elementToBeClickable(SwiftUI.BOTON_INGRESAR));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", btnLogin);
+            btnLogin.click();
+
+            // Captura posterior al login
+            registrar("Después Login", "Se intentó el ingreso con las credenciales proporcionadas");
         } catch (Exception e) {
-            registrar("ERROR LOGIN", "Falló el ingreso de credenciales para: " + rol);
+            registrar("ERROR LOGIN", "Falló el ingreso de credenciales para: " + rol + " - " + e.getMessage());
             throw e;
         }
     }
@@ -92,11 +137,12 @@ public class SwiftSteps {
     @Entonces("debería visualizar el home principal de Swift")
     public void validarHome() {
         try {
-            boolean esVisible = driver.findElement(SwiftUI.TITULO_HOME).isDisplayed();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+            WebElement titulo = wait.until(ExpectedConditions.visibilityOfElementLocated(SwiftUI.TITULO_HOME));
             registrar("Validación Home", "Carga exitosa del dashboard principal");
-            Assert.assertTrue(esVisible, "ERROR: No se visualiza el home de Swift.");
+            Assert.assertTrue(titulo.isDisplayed(), "ERROR: No se visualiza el home de Swift.");
         } catch (Exception e) {
-            registrar("ERROR VALIDACIÓN", "El Home no cargó o el elemento no fue encontrado");
+            registrar("ERROR VALIDACIÓN", "El Home no cargó o el elemento no fue encontrado: " + e.getMessage());
             throw e;
         }
     }

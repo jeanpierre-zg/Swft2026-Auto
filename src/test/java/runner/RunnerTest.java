@@ -16,7 +16,7 @@ import org.testng.annotations.DataProvider;
                 "html:target/cucumber-reports/cucumber.html",
                 "json:target/cucumber-reports/cucumber.json"
         },
-        tags = "@Swift",
+        tags = "@SwiftProcesador",
         monochrome = true
 )
 public class RunnerTest extends AbstractTestNGCucumberTests {
