@@ -17,16 +17,27 @@ public class EvidenceHelper {
     private XWPFDocument document;
     private String tituloPrueba;
     private String analista;
+    private String historiaUsuario;
+    private String descripcionCaso;
     private XWPFTableCell celdaResultado;
 
     /**
      * Constructor: Inicializa el documento y crea la portada automáticamente.
      */
-    public EvidenceHelper(String tituloPrueba, String analista) {
+    public EvidenceHelper(String tituloPrueba, String analista, String historiaUsuario, String descripcionCaso) {
         this.document = new XWPFDocument();
         this.tituloPrueba = tituloPrueba;
         this.analista = analista;
+        this.historiaUsuario = historiaUsuario;
+        this.descripcionCaso = descripcionCaso;
         crearPortada();
+    }
+    
+    /**
+     * Constructor legacy para compatibilidad
+     */
+    public EvidenceHelper(String tituloPrueba, String analista) {
+        this(tituloPrueba, analista, "No especificada", tituloPrueba);
     }
 
     /**
@@ -62,20 +73,26 @@ public class EvidenceHelper {
         rTitulo.setText("REPORTE DE EVIDENCIA DE AUTOMATIZACIÓN");
         rTitulo.addBreak();
 
-        XWPFTable table = document.createTable(4, 2);
+        XWPFTable table = document.createTable(6, 2);
         table.setWidth("100%");
 
         setCelda(table.getRow(0).getCell(0), "Proyecto:", true);
         setCelda(table.getRow(0).getCell(1), "Automatización Selenium + Screenplay", false);
+        
+        setCelda(table.getRow(1).getCell(0), "Historia de Usuario:", true);
+        setCelda(table.getRow(1).getCell(1), historiaUsuario, false);
+        
+        setCelda(table.getRow(2).getCell(0), "Caso de Prueba:", true);
+        setCelda(table.getRow(2).getCell(1), descripcionCaso, false);
 
-        setCelda(table.getRow(1).getCell(0), "Analista QA:", true);
-        setCelda(table.getRow(1).getCell(1), analista, false);
+        setCelda(table.getRow(3).getCell(0), "Analista QA:", true);
+        setCelda(table.getRow(3).getCell(1), analista, false);
 
-        setCelda(table.getRow(2).getCell(0), "Fecha Ejecución:", true);
-        setCelda(table.getRow(2).getCell(1), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), false);
+        setCelda(table.getRow(4).getCell(0), "Fecha Ejecución:", true);
+        setCelda(table.getRow(4).getCell(1), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), false);
 
-        setCelda(table.getRow(3).getCell(0), "Resultado Final:", true);
-        celdaResultado = table.getRow(3).getCell(1);
+        setCelda(table.getRow(5).getCell(0), "Resultado Final:", true);
+        celdaResultado = table.getRow(5).getCell(1);
         setCelda(celdaResultado, "PASADO (Exitoso)", false);
 
         XWPFParagraph pSalto = document.createParagraph();

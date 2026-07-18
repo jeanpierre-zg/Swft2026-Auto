@@ -21,8 +21,6 @@ public class LoguearseEnSwift {
     }
 
     public void realizarComo(WebDriver driver) {
-        // Intento de login (no imprimir credenciales en consola)
-        System.out.println("[LOGIN] Intentando login");
 
         driver.findElement(SwiftUI.CAMPO_USUARIO).sendKeys(usuario);
         driver.findElement(SwiftUI.CAMPO_PASSWORD).sendKeys(password);

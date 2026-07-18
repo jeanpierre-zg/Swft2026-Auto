@@ -20,20 +20,82 @@ import ui.SwiftUI;
 import utils.ConfigReader;
 import utils.DriverManager;
 import utils.EvidenceHelper;
+import utils.ExcelEvidenceHelper;
 
 public class SwiftSteps {
     private WebDriver driver;
     private EvidenceHelper evidence;
+    private ExcelEvidenceHelper evidenceExcel;
     private Scenario scenario;
 
     private static final String FOLDER_EJECUCION = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+    /**
+     * Extrae el nombre de la Característica (HU) del archivo feature
+     */
+    private String extraerHistoriaUsuario(Scenario scenario) {
+        try {
+            // Obtener la ruta del feature file desde el URI del scenario
+            String uri = scenario.getUri().toString();
+            System.out.println("[SWIFT] URI del scenario: " + uri);
+            
+            // Limpiar la URI: file:/// → quitar protocolo
+            String rutaLimpia = uri.replace("file:/", "").replaceFirst("/", ""); // Quitar file: y primer /
+            if (rutaLimpia.startsWith("/") && rutaLimpia.charAt(2) == ':') {
+                // En Windows, file:/C:/ → necesitamos C:/
+                rutaLimpia = rutaLimpia.substring(1);
+            }
+            
+            System.out.println("[SWIFT] Ruta limpia: " + rutaLimpia);
+            
+            // Leer el archivo
+            java.nio.file.Path featurePath = java.nio.file.Paths.get(rutaLimpia);
+            java.util.List<String> lines = java.nio.file.Files.readAllLines(featurePath);
+            
+            // Buscar la línea que contiene "Característica:"
+            for (String line : lines) {
+                if (line.trim().startsWith("Característica:")) {
+                    // Extraer el nombre después de "Característica:"
+                    String hu = line.trim().replace("Característica:", "").trim();
+                    System.out.println("[SWIFT] ✓ HU extraída del feature: " + hu);
+                    return hu;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[SWIFT] Error extrayendo HU del feature: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        // Valor por defecto si no se encuentra
+        return "Historia de Usuario Desconocida";
+    }
 
     @Before("@Swift")
     public void setUp(Scenario scenario) {
         this.scenario = scenario;
         try {
             this.driver = DriverManager.getDriver();
-            this.evidence = new EvidenceHelper(scenario.getName(), ConfigReader.getProperty("qa.analyst"));
+            
+            // El nombre del escenario ES el Caso de Prueba (CP)
+            String casoDePrueba = scenario.getName();
+            
+            // Extraer Historia de Usuario del feature file (línea "Característica:")
+            String historiaUsuario = extraerHistoriaUsuario(scenario);
+            
+            // Inicializar AMBAS evidencias con HU, CP y descripción
+            this.evidence = new EvidenceHelper(
+                historiaUsuario,  // <-- HU extraída del feature
+                ConfigReader.getProperty("qa.analyst"),
+                historiaUsuario,
+                casoDePrueba
+            );
+            
+            this.evidenceExcel = new ExcelEvidenceHelper(
+                historiaUsuario,  // <-- HU extraída del feature
+                ConfigReader.getProperty("qa.analyst"), 
+                casoDePrueba
+            );
+            
         } catch (Exception e) {
             System.err.println("CRÍTICO: Falló el inicio del driver en Swift: " + e.getMessage());
         }
@@ -42,13 +104,17 @@ public class SwiftSteps {
     /**
      * Método de registro con captura de pantalla forzada.
      * Si falla la captura, al menos deja un log en consola.
+     * Registra en AMBOS formatos: Word y Excel
      */
     private void registrar(String paso, String desc) {
         if (driver == null) return;
         try {
             byte[] ss = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
             scenario.attach(ss, "image/png", paso);
+            // Registrar en Word
             evidence.agregarPaso(paso, desc, ss);
+            // Registrar en Excel
+            evidenceExcel.agregarPaso(paso, desc, ss);
         } catch (Exception e) {
             System.err.println("No se pudo tomar la captura en el paso: " + paso);
         }
@@ -154,17 +220,26 @@ public class SwiftSteps {
                 try {
                     // Tomamos una captura final del estado exacto del error
                     byte[] ss = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                    // Registrar en AMBAS evidencias
                     evidence.agregarPasoFallido("PANTALLA DEL ERROR", "Estado del navegador al momento de la falla", ss);
                     evidence.marcarComoFallido();
+                    
+                    evidenceExcel.agregarPasoFallido("PANTALLA DEL ERROR", "Estado del navegador al momento de la falla", ss);
                 } catch (Exception e) {
                     System.err.println("No se pudo tomar la captura final de error.");
                 }
             }
 
-            // Guardado del reporte antes de cerrar el driver
+            // Guardado de AMBOS reportes antes de cerrar el driver
             String status = scenario.isFailed() ? "FALLIDO" : "OK";
-            String fileName = scenario.getName().replace(" ", "_") + " - " + status + ".docx";
-            evidence.guardarDocumento("target/evidencias/Ejecucion_" + FOLDER_EJECUCION + "/" + fileName);
+            
+            // Guardar Word
+            String fileNameWord = scenario.getName().replace(" ", "_") + " - " + status + ".docx";
+            evidence.guardarDocumento("target/evidencias/Ejecucion_" + FOLDER_EJECUCION + "/" + fileNameWord);
+            
+            // Guardar Excel
+            String fileNameExcel = scenario.getName().replace(" ", "_") + " - " + status + ".xlsx";
+            evidenceExcel.guardarDocumento("target/evidencias/Ejecucion_" + FOLDER_EJECUCION + "/" + fileNameExcel);
             
             DriverManager.quitDriver();
         }

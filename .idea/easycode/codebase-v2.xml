@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="com.obiscr.chatgpt.settings.EasyCodeState">
-    <option name="projectFiles" value="$PROJECT_DIR$/src/test/java/runner/RunnerTest.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/steps/SwiftSteps.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/tasks/LoguearseEnSwift.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/tasks/NavegarA.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/ui/SwiftUI.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/ui/WikipediaUI.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/utils/ConfigReader.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/utils/DriverManager.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/src/test/java/utils/EvidenceHelper.java;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/target/cucumber-reports/cucumber.html;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/target/cucumber-reports/cucumber.json;C:/Users/X12969/Documents/AutomatizacionSWIFT2026/README.md" />
-  </component>
-</project>
